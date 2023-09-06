@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TASKTROVE | HOME</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <nav>
+      <div class="logo"><span id="logo-color">T</span>askTrove</div>
+      <ul>
+        <li><a href="index.html">HOME</a></li>
+        <li><a href="about.html">ABOUT</a></li>
+        <li><a href="contact.html">CONTACT</a></li>
+      </ul>
+    </nav>
+    <h1>ADD YOUR TASK</h1>
+    <form id="task-form">
+      <input type="text" id="taskname" placeholder="Task Name" />
+      <input type="text" id="task" placeholder="Task" />
+      <button type="submit" class="btn">Add Task</button>
+    </form>
+    <table>
+      <tr>
+        <th>TASK NAME</th>
+        <th>TASK</th>
+        <th>Delete</th>
+      </tr>
+    </table>
+    <div id="alert" style="display: none">Text copied to clipboard</div>
+
+    <script>
+      function copyText(txt) {
+        navigator.clipboard.writeText(txt).then(
+          () => {
+            document.getElementById("alert").style.display = "inline";
+            setTimeout(() => {
+              document.getElementById("alert").style.display = "none";
+            }, 2000);
+          },
+          () => {
+            alert("Clipboard copying failed");
+          }
+        );
+      }
+
+      const deleteTask = (taskname) => {
+        let data = localStorage.getItem("Tasks");
+        let arr = JSON.parse(data);
+        arrUpdated = arr.filter((e) => {
+          return e.taskname != taskname;
+        });
+        localStorage.setItem("Tasks", JSON.stringify(arrUpdated));
+        alert(`Deleting ${taskname}'s Task`);
+        showTasks();
+      };
+
+      const showTasks = () => {
+        let tb = document.querySelector("table");
+        let data = localStorage.getItem("Tasks");
+        if (data == null || JSON.parse(data).length == 0) {
+          tb.innerHTML = "No Data to Show";
+        } else {
+          tb.innerHTML = `<tr>
+              <th>TASK NAME</th>
+              <th>TASK</th>
+              <th>Delete</th>
+              </tr>`;
+          let arr = JSON.parse(data);
+          let str = "";
+          for (let index = 0; index < arr.length; index++) {
+            const element = arr[index];
+            str += `<tr>
+                        <td>${element.taskname}<img onclick="copyText('${element.website}')" src="./copy.svg" alt="Copy Button" width="12" height="20"></td>
+                        <td>${element.task}<img onclick="copyText('${element.task}')" src="./copy.svg" alt="Copy Button" width="12" height="20"></td>
+                        <td><button class="btnsm" onClick="deleteTask('${element.taskname}')">Delete</button></td>
+                        </tr>`;
+          }
+          tb.innerHTML = tb.innerHTML + str;
+        }
+        taskname.value = "";
+        task.value = "";
+      };
+
+      console.log("working");
+      showTasks();
+
+      document.querySelector("#task-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        console.log("Clicked");
+        let taskname = document.getElementById("taskname").value;
+        let task = document.getElementById("task").value;
+        let tasks = localStorage.getItem("Tasks");
+
+        if (tasks == null) {
+          let json = [];
+          json.push({
+            taskname: taskname,
+            task: task,
+          });
+          alert("Task Saved");
+          localStorage.setItem("Tasks", JSON.stringify(json));
+        } else {
+          let json = JSON.parse(localStorage.getItem("Tasks"));
+          json.push({
+            taskname: taskname,
+            task: task,
+          });
+          alert("Task Saved");
+          localStorage.setItem("Tasks", JSON.stringify(json));
+        }
+        showTasks();
+      });
+    </script>
+    <footer>
+      <p>
+        &copy; 2023 TASKTROVE all rights reserved by
+        <span id="logo-color">@AYAANJAWAID</span>
+      </p>
+    </footer>
+  </body>
+</html>
